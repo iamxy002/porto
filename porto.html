@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>title</title>
+  <style>
+    body.light {
+      background-color: cyan;
+      color: #000;
+    }
+
+    body.dark {
+      background-color: #111;
+      color: #fff;
+    }
+
+    body {
+      font-family: sans-serif;
+      background-color: cyan;
+      color: black;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 60%;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: black;
+      color: cyan;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    #intro, #skill {
+      margin-top: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    #skill {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+    #skill.show {
+      max-height: 500px;
+      opacity: 1;
+    }
+
+    #form-kontak {
+      margin-top: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      text-align: left;
+      width: 100%;
+    }
+
+    #form-kontak input, #form-kontak textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    #form-kontak button {
+      background-color: black;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: lime;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="toggledarkmode()">GANTI TEMA</button>
+
+  <div class="container">
+    <h1>SELAMAT DATANG</h1>
+
+    <input type="text" id="nama" placeholder="TOLONG MASUKAN NAMA">
+    <button onclick="simpannama()">Simpan Nama</button>
+    <div id="intro"></div>
+
+    <button onclick="toggleskill()">Lihat Skill Saya</button>
+    <div id="skill"></div>
+
+    <h2>Kontak Saya</h2>
+    <div id="form-kontak">
+      <input id="KontakNama" placeholder="Nama" required><br>
+      <input id="kontakEmail" placeholder="Email" required><br>
+      <textarea id="kontakPesan" placeholder="Pesan..." required></textarea><br>
+      <button onclick="kirimData()">Kirim</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    document.body.classList.add("light");
+
+    function toggledarkmode() {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("light");
+    }
+
+    function simpannama() {
+      const nama = document.getElementById("nama").value;
+      const intro = document.getElementById("intro");
+      if (nama.trim() === "") {
+        alert("Tolong tulis nama");
+        return;
+      }
+      localStorage.setItem("namapengunjung", nama);
+      intro.innerHTML = "<p>Halo, " + nama + " Selamat Datang Di Portofolio Saya.</p>";
+    }
+
+    function tampilkansalam(nama) {
+      const intro = document.getElementById("intro");
+      intro.innerHTML = "<p>Halo, " + nama + " Selamat Datang Kembali.</p>";
+    }
+
+    window.onload = function () {
+      const namaTersimpan = localStorage.getItem("namapengunjung");
+      if (namaTersimpan) {
+        tampilkansalam(namaTersimpan);
+        document.getElementById("nama").value = namaTersimpan;
+      }
+    }
+
+    function toggleskill() {
+      const skill = document.getElementById("skill");
+      const tombol = event.target;
+      if (!skill.classList.contains("show")) {
+        skill.innerHTML = `
+          <h3>SKILL SAYA:</h3>
+          <ul>
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JAVASCRIPT</li>
+            <li>HARDWARE ENGGINER</li>
+            <li>FIBER OPTIK</li>
+            <li>MIKROTIK</li>
+            <li>HARDWARE KOMPUTER</li>
+          </ul>`;
+        skill.classList.add("show");
+        tombol.innerText = "Sembunyikan Skill";
+      } else {
+        skill.classList.remove("show");
+        tombol.innerText = "Lihat Skill Saya";
+        setTimeout(() => {
+          skill.innerHTML = "";
+        }, 500);
+      }
+    }
+
+    function kirimData() {
+      const nama = document.getElementById("KontakNama").value.trim();
+      const email = document.getElementById("kontakEmail").value.trim();
+      const pesan = document.getElementById("kontakPesan").value.trim();
+      const status = document.getElementById("status");
+
+      if (nama === "" || email === "" || pesan === "") {
+        alert("Semua kolom harus diisi");
+        return;
+      }
+
+      if (!email.includes("@") || !email.includes(".")) {
+        alert("Email tidak valid");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("entry.2122306113", nama);
+      formData.append("entry.1924467760", email);
+      formData.append("entry.488933314", pesan);
+
+      fetch("https://docs.google.com/forms/d/e/1FAIpQLSeJiaTK_itrzL8eXVKwuMkC6Q0gX4IpP_bplLswLz5j-lXmGQ/formResponse", {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+      }).then(() => {
+        status.innerHTML = "Pesan berhasil dikirim!";
+        document.getElementById("KontakNama").value = "";
+        document.getElementById("kontakEmail").value = "";
+        document.getElementById("kontakPesan").value = "";
+      }).catch(() => {
+        status.innerHTML = "Gagal mengirim pesan.";
+      });
+    }
+  </script>
+</body>
+</html>
